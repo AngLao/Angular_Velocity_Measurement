@@ -1,0 +1,8 @@
+
+/build
+*.orig
+*.uvoptx
+*.AngLao
+*.scvd
+JLinkSettings.ini
+JLinkLog.txt
