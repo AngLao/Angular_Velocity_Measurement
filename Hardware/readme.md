@@ -38,6 +38,6 @@
 
 ## 实物图
 
-![Alt text](./pic/7.png)
+![Alt text](./pic/7.jpeg)
 
-![Alt text](./pic/8.png)
+![Alt text](./pic/8.jpeg)
