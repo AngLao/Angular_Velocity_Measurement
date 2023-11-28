@@ -23,14 +23,14 @@
 ![Alt text](./pic/1701155084141.png)
 
 ![Alt text](./pic/1701155060954.png)
-![Alt text](./1701155068268.png)
+![Alt text](./pic/1701155068268.png)
 
 ##3D图
 ![Alt text](./pic/1701155122007.png)
-![Alt text](.pic//1701155142413.png)
+![Alt text](.pic/1701155142413.png)
 
 
 ##实物图
-![Alt text](.pic//B41C5C3309F3631BEB8B4DAC4FFA28CA.png)
+![Alt text](.pic/B41C5C3309F3631BEB8B4DAC4FFA28CA.png)
 
-![Alt text](.pic//C7E1EDB4F7635E49E33C7052951AFF6A.png)
+![Alt text](.pic/C7E1EDB4F7635E49E33C7052951AFF6A.png)
