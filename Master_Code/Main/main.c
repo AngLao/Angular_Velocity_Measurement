@@ -9,8 +9,6 @@ mavlink_system_t mavlink_system = {
     0x66  // Component ID (a MAV_COMPONENT value)
 };
 
-mavlink_raw_imu_t imu_raw_data;
-mavlink_message_t msg;
 
 struct icm20602_dev icm20602_config = { .id = 0, \
 																				.hal_wr = icm20602_write, \
@@ -36,21 +34,34 @@ void send_data(void *pvParameters)
 
 	icm20602_init(&icm20602_config);
   while (1) {
-		
-    /*读取icm20602数据*/
+		mavlink_attitude_t 	imu_data;
+		mavlink_raw_imu_t 	imu_raw_data;
+
+		mavlink_message_t 	imu_data_msg;
+		mavlink_message_t 	imu_raw_data_msg;
+    /*读取icm20602原始寄存器数据*/
 		icm20602_read_data_raw(&icm20602_config, 
 													 &imu_raw_data.xacc, &imu_raw_data.yacc, &imu_raw_data.zacc, 
 													 &imu_raw_data.xgyro, &imu_raw_data.ygyro, &imu_raw_data.zgyro,
 													 &imu_raw_data.temperature);
-    
-		mavlink_msg_raw_imu_encode_chan(mavlink_system.sysid, mavlink_system.compid,MAVLINK_COMM_0,
-														   &msg,&imu_raw_data);
 		
+		mavlink_msg_raw_imu_encode_chan(mavlink_system.sysid, mavlink_system.compid,MAVLINK_COMM_0,
+														   &imu_raw_data_msg,&imu_raw_data);
+		
+    /*读取icm20602角速度（rad/s）数据*/
+		icm20602_read_gyro(&icm20602_config, 
+													 &imu_data.pitchspeed, &imu_data.rollspeed, &imu_data.yawspeed);
+    
+		
+		mavlink_msg_attitude_encode_chan(mavlink_system.sysid, mavlink_system.compid,MAVLINK_COMM_0,
+														   &imu_data_msg,&imu_data);
+		
+    /*虚拟串口发送数据*/
 		uint8_t buf[100] = {0};
-		uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);
+		uint16_t len = mavlink_msg_to_send_buffer(buf, &imu_data_msg);
 		AnoUsbCdcSend(buf, len);
 		
-    vTaskDelayUntil(&xLastWakeTime, configTICK_RATE_HZ / 20);
+    vTaskDelayUntil(&xLastWakeTime, configTICK_RATE_HZ / 100);
   }
 }
  
@@ -74,6 +85,7 @@ void led_task(void *pvParameters)
     vTaskDelayUntil(&xLastWakeTime, configTICK_RATE_HZ / 3);
   }
 }
+
 int main(void)
 { 
   /* 驱动初始化 */

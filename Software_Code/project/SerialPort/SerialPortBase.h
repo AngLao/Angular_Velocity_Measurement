@@ -50,10 +50,10 @@ private:
     mavlink_message_t msg;
     int chan = MAVLINK_COMM_0;
 
-    mavlink_raw_imu_t raw_imu_data;
-
+    mavlink_raw_imu_t   raw_imu_data;
+    mavlink_attitude_t  imu_data;
 signals:
-    void rawImuDataupdate(mavlink_raw_imu_t &rawImuData);
+    void gyroDataupdate(float gyroX, float gyroY, float gyroZ);
 };
 
 #endif // SERIALPORTBASE_H

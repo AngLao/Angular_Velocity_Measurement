@@ -7,6 +7,11 @@ SerialPortBase::SerialPortBase(void)
     pWidget = new QWidget();
     pSerialPort = new QSerialPort();
 
+    //发送输入框消息按钮信号和槽
+    connect( pSerialPort,&QSerialPort::errorOccurred,this,[&](QSerialPort::SerialPortError error){
+        qDebug()<<error;
+    });
+
     ui = new class Ui_SerialPortBase();
     ui->setupUi(pWidget);
 
@@ -214,11 +219,18 @@ void SerialPortBase::DataPreprocessing()
         if (mavlink_parse_char(chan, byte, &msg, &status) == 0)
             continue;
 
-        if(msg.msgid == MAVLINK_MSG_ID_RAW_IMU){
-            qDebug("Raw imu data is received\n");
+        switch(msg.msgid){
+        case MAVLINK_MSG_ID_RAW_IMU:
+            qDebug("msg id : RAW_IMU\n");
             mavlink_msg_raw_imu_decode(&msg, &raw_imu_data);
 
-            emit rawImuDataupdate(raw_imu_data);
+            break;
+        case MAVLINK_MSG_ID_ATTITUDE:
+            qDebug("msg id : ATTITUDE\n");
+            mavlink_msg_attitude_decode(&msg, &imu_data);
+
+            emit gyroDataupdate(imu_data.pitchspeed,imu_data.rollspeed,imu_data.yawspeed);
+            break;
         }
 
     }

@@ -26,6 +26,8 @@ WaveformDisplay::WaveformDisplay(void)
             pQCustomPlot->graph(i)->data().data()->clear();
         }
         pQCustomPlot->replot();
+
+        frameCount = 0;
     });
     //动态显示按钮
     connect(ui->dynamicDisplayButton,&QPushButton::clicked,this,[=](){
@@ -37,7 +39,7 @@ WaveformDisplay::WaveformDisplay(void)
             dynamicDisplayFlag = false;
         }
     });
-    //全显波形按钮
+    //波形全显按钮
     connect(ui->seeAllLineButton,&QPushButton::clicked,this,[=](){
         ui->dynamicDisplayButton->setText("动态显示");
         dynamicDisplayFlag = false;
@@ -57,8 +59,8 @@ void WaveformDisplay::lineInit(){
 
     //新增波形
     QStringList colorStrList, nameList;
-    colorStrList<<"green"<<"glod"<<"red";
-    nameList<<"X"<<"Y"<<"Z";
+    colorStrList<<"green"<<"blue"<<"red";
+    nameList<<"pitch:0°/s"<<"roll:0°/s"<<"yaw:0°/s";
     for (int var = 0; var < 3; ++var) {
         QPen pen;
         pen.setWidth(2);//设置线宽
@@ -72,6 +74,7 @@ void WaveformDisplay::lineInit(){
     }
 
     //显示图例
+    pQCustomPlot->legend->setMinimumSize(120,60);
     pQCustomPlot->legend->setVisible(true);
     //允许拖拽
     pQCustomPlot->setInteraction( QCP::iRangeDrag , true);
@@ -81,17 +84,19 @@ void WaveformDisplay::lineInit(){
 }
 
 
-void WaveformDisplay::paintGyroData(mavlink_raw_imu_t &rawImuData)
+void WaveformDisplay::paintGyroData(float gyroX, float gyroY, float gyroZ)
 {
     static bool isChange = false;
-    static unsigned long frameCount = 0;
     if(startFlag){
         //添加数据
         isChange=true;
 
-        pQCustomPlot->graph(0)->addData(frameCount,rawImuData.xgyro);
-        pQCustomPlot->graph(1)->addData(frameCount,rawImuData.ygyro);
-        pQCustomPlot->graph(2)->addData(frameCount,rawImuData.zgyro);
+        pQCustomPlot->graph(0)->addData(frameCount,gyroX);
+        pQCustomPlot->graph(0)->setName("pitch:" + QString::number(gyroX, 'f', 1) + "°/s");
+        pQCustomPlot->graph(1)->addData(frameCount,gyroY);
+        pQCustomPlot->graph(1)->setName("roll:" + QString::number(gyroY, 'f', 1) + "°/s");
+        pQCustomPlot->graph(2)->addData(frameCount,gyroZ);
+        pQCustomPlot->graph(2)->setName("yaw:" + QString::number(gyroZ, 'f', 1) + "°/s");
 
         frameCount++;
     }
@@ -99,36 +104,26 @@ void WaveformDisplay::paintGyroData(mavlink_raw_imu_t &rawImuData)
         //刷新数据的时候才动态显示
         if(isChange){
             //动态x轴
-            pQCustomPlot->xAxis->setRange(frameCount-20, 300, Qt::AlignHorizontal_Mask);
+            pQCustomPlot->xAxis->setRange(frameCount, 300, Qt::AlignHorizontal_Mask);
             //设置y轴范围
             QCPRange a = pQCustomPlot->yAxis->range();
-            if(rawImuData.xgyro < a.lower)
-                pQCustomPlot->yAxis->setRange(rawImuData.xgyro,a.upper);
-            else if(rawImuData.xgyro > a.upper)
-                pQCustomPlot->yAxis->setRange(a.lower,rawImuData.xgyro);
+            if(gyroX < a.lower)
+                pQCustomPlot->yAxis->setRange(gyroX,a.upper);
+            else if(gyroX > a.upper)
+                pQCustomPlot->yAxis->setRange(a.lower,gyroX);
 
-            if(rawImuData.ygyro < a.lower)
-                pQCustomPlot->yAxis->setRange(rawImuData.ygyro,a.upper);
-            else if(rawImuData.ygyro > a.upper)
-                pQCustomPlot->yAxis->setRange(a.lower,rawImuData.ygyro);
+            if(gyroY < a.lower)
+                pQCustomPlot->yAxis->setRange(gyroY,a.upper);
+            else if(gyroY > a.upper)
+                pQCustomPlot->yAxis->setRange(a.lower,gyroY);
 
-            if(rawImuData.zgyro < a.lower)
-                pQCustomPlot->yAxis->setRange(rawImuData.zgyro,a.upper);
-            else if(rawImuData.zgyro > a.upper)
-                pQCustomPlot->yAxis->setRange(a.lower,rawImuData.zgyro);
+            if(gyroZ < a.lower)
+                pQCustomPlot->yAxis->setRange(gyroZ,a.upper);
+            else if(gyroZ > a.upper)
+                pQCustomPlot->yAxis->setRange(a.lower,gyroZ);
 
         }
     }
 
     pQCustomPlot->replot(QCustomPlot::rpQueuedReplot); //刷新
-    //    static QTimer* thisTimer = new QTimer();
-    //    thisTimer->setTimerType(Qt::PreciseTimer);
-    //    connect(thisTimer , &QTimer::timeout , this , [=](){
-    //        if(isChange){
-    //            pQCustomPlot->replot(QCustomPlot::rpQueuedReplot); //刷新
-    //            isChange=false;
-    //        }
-    //    });
-    //    thisTimer->start(1);
-
 }

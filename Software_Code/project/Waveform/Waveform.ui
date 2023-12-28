@@ -51,28 +51,28 @@
      <item>
       <widget class="QPushButton" name="startWaveformButton">
        <property name="text">
-        <string>startWaveformButton</string>
+        <string>开始显示</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="clearWaveformButton">
        <property name="text">
-        <string>clearWaveformButton</string>
+        <string>清空波形</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="dynamicDisplayButton">
        <property name="text">
-        <string>dynamicDisplayButton</string>
+        <string>动态显示</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="seeAllLineButton">
        <property name="text">
-        <string>seeAllLineButton</string>
+        <string>波形全显</string>
        </property>
       </widget>
      </item>

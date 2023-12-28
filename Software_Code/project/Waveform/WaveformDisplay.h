@@ -20,9 +20,10 @@ public:
         return pWidget;
     };
 
-    void paintGyroData(mavlink_raw_imu_t &rawImuData);
+    void paintGyroData(float gyroX, float gyroY, float gyroZ);
 private:
     void lineInit();
+    unsigned long frameCount = 0;
 
 public:
 

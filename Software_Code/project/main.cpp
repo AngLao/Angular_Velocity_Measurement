@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     Widget w;
+    w.setWindowTitle("HelloToolBox");
     w.show();
 
     return a.exec();
@@ -32,8 +33,8 @@ Widget::Widget(QWidget *parent) : QWidget(parent)
     pStackedWidget->addWidget(pSerialPortBase->Widget());
     pStackedWidget->addWidget(pWaveformDisplay->Widget());
 
-    connect(pSerialPortBase, &SerialPortBase::rawImuDataupdate, pWaveformDisplay, &WaveformDisplay::paintGyroData);
-    pStackedWidget->setCurrentIndex(1);
+    connect(pSerialPortBase, &SerialPortBase::gyroDataupdate, pWaveformDisplay, &WaveformDisplay::paintGyroData);
+    pStackedWidget->setCurrentIndex(0);
 
 }
 
@@ -54,7 +55,7 @@ void Widget::startWindowInit(void){
     //加入label显示基本信息，垂直布局
     QLabel* say = new QLabel();
     QString sayTex = {  "version: 1.0 \n"
-                        "欢迎使用Hello ToolBox \n"};
+                        "角速度测量波形显示,最大量程2000dps\n"};
     say->setText(sayTex);
     lowLayout->addWidget(say);
 
@@ -78,13 +79,9 @@ void Widget::startWindowInit(void){
         connect(serialConf ,&QPushButton::clicked,this,[this]() {
             pStackedWidget->setCurrentIndex(0);
         });
-        static QToolButton* dataView = buttonInit("数据面板",":/Icon/data.ico");
-        connect(dataView ,&QPushButton::clicked,this,[this]() {
-            pStackedWidget->setCurrentIndex(1);
-        });
         static QToolButton* waveformDisplay = buttonInit("波形显示",":/Icon/bx.ico");
         connect(waveformDisplay ,&QPushButton::clicked,this,[this]() {
-            pStackedWidget->setCurrentIndex(4);
+            pStackedWidget->setCurrentIndex(1);
         });
         static QToolButton* beSmall = buttonInit("隐藏窗口",":/Icon/small.ico");
         connect(beSmall ,&QPushButton::clicked,this,[=]() {
